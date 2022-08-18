@@ -38,7 +38,7 @@ public class PostService {
     }
 
     @Transactional
-    public Post modify(String userName, Integer postId, String title, String body) {
+    public Post modify(String title, String body,String userName,Integer postId) {
         PostEntity postEntity = postEntityRepository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
         UserEntity userEntity = userEntityRepository.findByUserName(userName)
                 .orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userName is %s", userName)));
@@ -49,7 +49,7 @@ public class PostService {
         postEntity.setTitle(title);
         postEntity.setBody(body);
 
-        return Post.fromEntity(postEntityRepository.save(postEntity));
+        return Post.fromEntity(postEntityRepository.saveAndFlush(postEntity));
     }
 
     @Transactional

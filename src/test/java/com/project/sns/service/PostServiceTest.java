@@ -2,6 +2,7 @@ package com.project.sns.service;
 
 import com.project.sns.exception.ErrorCode;
 import com.project.sns.exception.SnsApplicationException;
+import com.project.sns.fixture.PostEntityFixture;
 import com.project.sns.model.entity.PostEntity;
 import com.project.sns.model.entity.UserEntity;
 import com.project.sns.repository.PostEntityRepository;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -33,12 +36,16 @@ public class PostServiceTest {
         String title = "title";
         String body = "body";
         String userName = "userName";
+        Integer postId=1;
+
+        PostEntity postEntity = PostEntityFixture.get(userName, postId, 1);
+        UserEntity userEntity = postEntity.getUser();
 
         //mocking
-        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of((mock(UserEntity.class))));
-        when(postEntityRepository.save(any())).thenReturn(mock(PostEntity.class));
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(userEntity));
+        when(postEntityRepository.save(any())).thenReturn(postEntity);
 
-        Assertions.assertDoesNotThrow(()-> postService.create(title,body,userName));
+        Assertions.assertDoesNotThrow(()-> postService.create(userName,title,body));
 
     }
 
@@ -56,4 +63,9 @@ public class PostServiceTest {
         Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, e.getErrorCode());
 
     }
+
+
+
+
+
 }
