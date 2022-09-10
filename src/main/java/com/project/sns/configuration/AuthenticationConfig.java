@@ -23,7 +23,7 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
 //    private final BCryptPasswordEncoder encoder;
 
     @Value("${jwt.secret-key}")
-    private String secretKey;
+    private String key;
 
 //    @Override
 //    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -32,11 +32,12 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-                .antMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg",
-                        "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/manifest.json")
-                .antMatchers("/resources/**")
-                .antMatchers(HttpMethod.POST, "/api/*/users/join", "/api/*/users/login");
+//        web.ignoring()
+//                .antMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg",
+//                        "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/manifest.json")
+//                .antMatchers("/resources/**")
+//                .antMatchers(HttpMethod.POST, "/api/*/users/join", "/api/*/users/login");
+        web.ignoring().regexMatchers("^(?!/api/).*");
     }
 
     @Override
@@ -48,7 +49,7 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(new JwtTokenFilter(secretKey, userService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenFilter(key, userService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 

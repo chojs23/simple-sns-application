@@ -62,4 +62,10 @@ public class PostService {
         }
         postEntityRepository.delete(postEntity);
     }
+
+
+    @Transactional
+    public void like(Integer postId, String userName) {
+
+    }
 }
