@@ -38,7 +38,7 @@ public class PostController {
     public Response<PostResponse> modify(@PathVariable Integer postId, @RequestBody PostModifyRequest request, Authentication authentication) {
         return Response.success(
                 PostResponse.fromPost(
-                        postService.modify(request.getTitle(), request.getBody(),authentication.getName(),postId)));
+                        postService.modify(request.getTitle(), request.getBody(), authentication.getName(), postId)));
     }
 
     @DeleteMapping("/{postId}")
@@ -47,6 +47,16 @@ public class PostController {
         return Response.success();
     }
 
+    @PostMapping("/{postId}/likes")
+    public Response<Void> like(@PathVariable Integer postId, Authentication authentication) {
 
+        postService.like(postId, authentication.getName());
+        return Response.success();
+    }
 
+    @GetMapping("/{postId}/likes")
+    public Response<Integer> likeCount(@PathVariable Integer postId, Authentication authentication) {
+
+        return Response.success(postService.likeCount(postId));
+    }
 }

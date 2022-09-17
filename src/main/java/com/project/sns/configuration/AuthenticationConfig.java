@@ -40,11 +40,16 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().regexMatchers("^(?!/api/).*");
     }
 
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .anyRequest().authenticated()
+                .antMatchers("/api/*/users/join", "/api/*/users/login").permitAll()
+                .antMatchers("/api/*/users/alarm/subscribe/*").permitAll()
+                .antMatchers("/api/**").authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -12,21 +12,18 @@ import java.time.Instant;
 @Setter
 @Getter
 @Entity
-@Table(name = "\"post\"")
-@SQLDelete(sql = "UPDATE \"post\" SET deleted_at = NOW() where id=?")
+@Table(name = "\"like\"")
+@SQLDelete(sql = "UPDATE \"like\" SET deleted_at = NOW() where id=?")
 @NoArgsConstructor
-public class PostEntity {
+public class LikeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "body", columnDefinition = "TEXT")
-    private String body;
-
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private PostEntity post;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
@@ -51,11 +48,10 @@ public class PostEntity {
         this.updatedAt = Timestamp.from(Instant.now());
     }
 
-    public static PostEntity of(String title, String body, UserEntity user) {
-        PostEntity entity = new PostEntity();
-        entity.setTitle(title);
-        entity.setBody(body);
-        entity.setUser(user);
+    public static LikeEntity of(UserEntity userEntity,PostEntity postEntity) {
+        LikeEntity entity = new LikeEntity();
+        entity.setPost(postEntity);
+        entity.setUser(userEntity);
         return entity;
     }
 }
