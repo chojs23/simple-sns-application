@@ -1,9 +1,12 @@
 package com.project.sns.controller;
 
+import com.project.sns.controller.request.PostCommentRequest;
 import com.project.sns.controller.request.PostModifyRequest;
 import com.project.sns.controller.request.PostWriteRequest;
+import com.project.sns.controller.response.CommentResponse;
 import com.project.sns.controller.response.PostResponse;
 import com.project.sns.controller.response.Response;
+import com.project.sns.model.Comment;
 import com.project.sns.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -58,5 +61,16 @@ public class PostController {
     public Response<Integer> likeCount(@PathVariable Integer postId, Authentication authentication) {
 
         return Response.success(postService.likeCount(postId));
+    }
+
+    @PostMapping("{postId}/comments")
+    public Response<Void> comment(@PathVariable Integer postId, @RequestBody PostCommentRequest request, Authentication authentication) {
+        postService.comment(postId, authentication.getName(), request.getComment());
+        return Response.success();
+    }
+
+    @GetMapping("/{postId}/comments")
+    public Response<Page<CommentResponse>> comment(@PathVariable Integer postId, Pageable pageable, Authentication authentication) {
+        return Response.success(postService.getComments(postId,pageable).map(CommentResponse::fromComment));
     }
 }
