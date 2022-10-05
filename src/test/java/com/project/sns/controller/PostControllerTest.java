@@ -1,10 +1,7 @@
 package com.project.sns.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.sns.controller.request.PostCreateRequest;
-import com.project.sns.controller.request.PostModifyRequest;
-import com.project.sns.controller.request.PostWriteRequest;
-import com.project.sns.controller.request.UserJoinRequest;
+import com.project.sns.controller.request.*;
 import com.project.sns.exception.ErrorCode;
 import com.project.sns.exception.SnsApplicationException;
 import com.project.sns.service.PostService;
@@ -244,6 +241,42 @@ public class PostControllerTest {
 
         mockMvc.perform(post("/api/v1/posts/1/likes")
                         .contentType(MediaType.APPLICATION_JSON)
+                ).andDo(print())
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    @WithMockUser
+    void 댓글기능() throws Exception{
+        mockMvc.perform(post("/api/v1/posts/1/comments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PostCommentRequest("comment")))
+                ).andDo(print())
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @WithAnonymousUser
+    void 댓글작성시_로그인하지_않은경우() throws Exception{
+        mockMvc.perform(post("/api/v1/posts/1/comments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PostCommentRequest("comment")))
+                ).andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    @WithMockUser
+    void 댓글작성시_게시물이_없는경우() throws Exception{
+        //mocking
+        doThrow(new SnsApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).comment(any(), any());
+
+        mockMvc.perform(post("/api/v1/posts/1/comments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PostCommentRequest("comment")))
                 ).andDo(print())
                 .andExpect(status().isNotFound());
 
