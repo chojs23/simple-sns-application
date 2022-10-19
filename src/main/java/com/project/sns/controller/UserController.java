@@ -6,13 +6,18 @@ import com.project.sns.controller.response.AlarmResponse;
 import com.project.sns.controller.response.Response;
 import com.project.sns.controller.response.UserJoinResponse;
 import com.project.sns.controller.response.UserLoginResponse;
+import com.project.sns.exception.ErrorCode;
+import com.project.sns.exception.SnsApplicationException;
 import com.project.sns.model.User;
 import com.project.sns.service.UserService;
+import com.project.sns.util.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -36,7 +41,9 @@ public class UserController {
 
     @GetMapping("/alarm")
     public Response<Page<AlarmResponse>> alarm(Pageable pageable, Authentication authentication) {
-        return Response.success(userService.alarmList(authentication.getName(), pageable).map(AlarmResponse::fromAlarm));
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class).orElseThrow(() -> new SnsApplicationException(ErrorCode.INTERNER_SERVER_ERROR,
+                "Casting to User class failed"));
+        return Response.success(userService.alarmList(user.getId(), pageable).map(AlarmResponse::fromAlarm));
 
     }
 }
