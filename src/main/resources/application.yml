@@ -19,3 +19,5 @@ jwt:
   secret-key: fast_campus.sns-application-2022.secret-key
   #30 days
   token.expired-time-ms: 2592000000
+
+spring.redis.url : redis://:p8013fb94b16e32e0a2b7b5b5ed6ad313f2324ed90fa8db4a1e74be4713ac8f25@ec2-34-196-57-8.compute-1.amazonaws.com:8079

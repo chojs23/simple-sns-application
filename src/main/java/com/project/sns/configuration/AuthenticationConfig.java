@@ -37,7 +37,8 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
 //                        "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/manifest.json")
 //                .antMatchers("/resources/**")
 //                .antMatchers(HttpMethod.POST, "/api/*/users/join", "/api/*/users/login");
-        web.ignoring().regexMatchers("^(?!/api/).*");
+        web.ignoring().regexMatchers("^(?!/api/).*")
+                .antMatchers(HttpMethod.POST,"/api/*/users/join", "/api/*/users/login");
     }
 
 
@@ -46,8 +47,6 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/*/users/join", "/api/*/users/login").permitAll()
-                .antMatchers("/api/*/users/alarm/subscribe/*").permitAll()
                 .antMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
