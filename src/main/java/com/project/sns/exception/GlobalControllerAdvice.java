@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
-public class GlobalControlloerAdvice {
+public class GlobalControllerAdvice {
 
     @ExceptionHandler(SnsApplicationException.class)
     public ResponseEntity<?> applicationHandler(SnsApplicationException e) {
