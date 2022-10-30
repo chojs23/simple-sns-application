@@ -7,6 +7,8 @@ import com.project.sns.model.AlarmType;
 import com.project.sns.model.Comment;
 import com.project.sns.model.Post;
 import com.project.sns.model.entity.*;
+import com.project.sns.model.event.AlarmEvent;
+import com.project.sns.producer.AlarmProducer;
 import com.project.sns.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ public class PostService {
     private final CommentEntityRepository commentEntityRepository;
     private final AlarmEntityRepository alarmEntityRepository;
     private final AlarmService alarmService;
+    private final AlarmProducer alarmProducer;
 
     @Transactional
     public void create(String userName, String title, String body) {
@@ -85,8 +88,13 @@ public class PostService {
         });
 
         likeEntityRepository.save(LikeEntity.of(userEntity, postEntity));
-        AlarmEntity alarmEntity = alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_LIKE_ON_POST, new AlarmArgs(userEntity.getId(), postEntity.getId())));
-        alarmService.send(alarmEntity.getId(), postEntity.getUser().getId());
+
+        // 사용자가 like 하면 alarm 같은 경우는 사용자의 주된 관심사가 아니기 때문에 알람은 비동기적으로 처리해서 성능 향상 kafka 사용
+        // 알람을 저장하고 보내는 이벤트를 kafka 로 보냄
+//        AlarmEntity alarmEntity = alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_LIKE_ON_POST, new AlarmArgs(userEntity.getId(), postEntity.getId())));
+//        alarmService.send(alarmEntity.getId(), postEntity.getUser().getId());
+        alarmProducer.send(new AlarmEvent(postEntity.getUser().getId(), AlarmType.NEW_LIKE_ON_POST,
+                new AlarmArgs(userEntity.getId(), postEntity.getId())));
 
     }
 
@@ -105,8 +113,10 @@ public class PostService {
         //comment save
         commentEntityRepository.save(CommentEntity.of(userEntity, postEntity, comment));
 
-        AlarmEntity alarmEntity = alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_COMMENT_ON_POST, new AlarmArgs(userEntity.getId(), postEntity.getId())));
-        alarmService.send(alarmEntity.getId(), postEntity.getUser().getId());
+        //AlarmEntity alarmEntity = alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_COMMENT_ON_POST, new AlarmArgs(userEntity.getId(), postEntity.getId())));
+        //alarmService.send(alarmEntity.getId(), postEntity.getUser().getId());
+        alarmProducer.send(new AlarmEvent(postEntity.getUser().getId(), AlarmType.NEW_COMMENT_ON_POST,
+                new AlarmArgs(userEntity.getId(), postEntity.getId())));
     }
 
 

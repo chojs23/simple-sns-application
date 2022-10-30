@@ -5,15 +5,16 @@ spring.jpa:
   properties.hibernate.format_sql: true
   show-sql: true
 
-spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 4
-    platform: postgres
-    url: jdbc:postgresql://ec2-44-193-178-122.compute-1.amazonaws.com/d7o3p3ogqksv6b
-    username: pytlbkyvxtmcut
-    password: c8baa84a6dd06b4f9b75a6c0c4d556b7f8b55ec2e597a5d6707793da80501b2d
+spring.datasource:
+  driver-class-name: org.postgresql.Driver
+  hikari:
+    maximum-pool-size: 4
+  platform: postgres
+  url: jdbc:postgresql://ec2-44-193-178-122.compute-1.amazonaws.com/d7o3p3ogqksv6b
+  username: pytlbkyvxtmcut
+  password: c8baa84a6dd06b4f9b75a6c0c4d556b7f8b55ec2e597a5d6707793da80501b2d
+
+
 
 jwt:
   secret-key: fast_campus.sns-application-2022.secret-key
@@ -21,3 +22,26 @@ jwt:
   token.expired-time-ms: 2592000000
 
 spring.redis.url : redis://:p8013fb94b16e32e0a2b7b5b5ed6ad313f2324ed90fa8db4a1e74be4713ac8f25@ec2-34-196-57-8.compute-1.amazonaws.com:8079
+
+spring:
+  kafka:
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: SCRAM-SHA-256
+      sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="w89i5rq9" password="XqEh88i3DxlyrXa5ESdqYRVUj3TRpSl0";
+    consumer:
+      properties.spring.json.trusted.packages: "*"
+      bootstrap-servers: dory-01.srvs.cloudkafka.com:9094,dory-02.srvs.cloudkafka.com:9094,dory-03.srvs.cloudkafka.com:9094
+      group-id: alarm
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    listener:
+      ack-mode: MANUAL
+    producer:
+      bootstrap-servers: dory-01.srvs.cloudkafka.com:9094,dory-02.srvs.cloudkafka.com:9094,dory-03.srvs.cloudkafka.com:9094
+      key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties.enable.idempotence: false
+    topic:
+      alarm: w89i5rq9-alarm
